@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Только для тебя ❤️</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: radial-gradient(circle at top, #2b0b3f 0%, #120422 60%, #07010f 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Фоновые сердечки */
+    .bg-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .floating-heart {
+      position: absolute;
+      bottom: -40px;
+      color: rgba(255, 105, 180, 0.45);
+      font-size: 20px;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.8) rotate(0deg);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-110vh) scale(1.3) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      padding: 20px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      justify-content: center;
+    }
+
+    /* Карточки со стеклом */
+    .glass-card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 30px;
+      padding: 28px 22px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 35px rgba(255, 75, 130, 0.2);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 24px;
+    }
+
+    /* ЭКРАН 1: Пароль */
+    .lock-icon {
+      font-size: 46px;
+      margin-bottom: 14px;
+      display: inline-block;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.6)); }
+      50% { transform: scale(1.12); filter: drop-shadow(0 0 20px rgba(255, 105, 180, 0.9)); }
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #fff 0%, #ffc2d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 18px;
+      width: 100%;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 18px;
+      color: #fff;
+      font-size: 19px;
+      text-align: center;
+      letter-spacing: 2px;
+      outline: none;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus {
+      border-color: #ff4b82;
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 20px rgba(255, 75, 130, 0.4);
+    }
+
+    .btn-action {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+      border: none;
+      border-radius: 18px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(255, 65, 108, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .btn-action:active {
+      transform: scale(0.97);
+    }
+
+    .error-msg {
+      color: #ff6b81;
+      font-size: 13px;
+      margin-top: 12px;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .error-msg.visible {
+      opacity: 1;
+    }
+
+    .shake {
+      animation: shakeAnim 0.4s ease-in-out;
+    }
+
+    @keyframes shakeAnim {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-10px); }
+      40%, 80% { transform: translateX(10px); }
+    }
+
+    /* ЭКРАН 2: ОСНОВНОЙ КОНТЕНТ */
+    #content-screen {
+      display: none;
+      width: 100%;
+      padding: 10px 0 40px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #content-screen.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .header-tag {
+      display: inline-block;
+      background: rgba(255, 75, 130, 0.2);
+      border: 1px solid rgba(255, 75, 130, 0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #ff9ebb;
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+
+    .love-title {
+      font-family: 'Caveat', cursive;
+      font-size: 38px;
+      line-height: 1.2;
+      color: #ff80aa;
+      margin-bottom: 18px;
+      text-shadow: 0 2px 10px rgba(255, 105, 180, 0.3);
+    }
+
+    .counter-box {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+    }
+
+    .counter-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .counter-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffb3c6;
+    }
+
+    .text-content {
+      font-size: 15px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 300;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+
+    .text-content p {
+      margin-bottom: 14px;
+    }
+
+    .signature {
+      font-family: 'Caveat', cursive;
+      font-size: 30px;
+      color: #ff6b8b;
+      text-align: right;
+    }
+
+    /* ИНТЕРАКТИВНЫЕ БЛОКИ ДЛЯ 5-10 МИНУТ */
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: #ffd6e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* 1. БАНКА С КОМПЛИМЕНТАМИ */
+    .jar-btn {
+      background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+      border: none;
+      border-radius: 20px;
+      padding: 16px;
+      width: 100%;
+      color: #3b1443;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(161, 140, 209, 0.3);
+      transition: all 0.3s;
+    }
+
+    .jar-btn:active {
+      transform: scale(0.96);
+    }
+
+    .reason-box {
+      margin-top: 14px;
+      min-height: 60px;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 16px;
+      border: 1px dashed rgba(255, 182, 193, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #ffeef2;
+      line-height: 1.5;
+      transition: all 0.3s;
+    }
+
+    /* 2. ЛОВЛЯ СЕРДЕЧЕК (МИНИ-ИГРА) */
+    .game-area {
+      width: 100%;
+      height: 220px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 10px;
+    }
+
+    .game-heart {
+      position: absolute;
+      font-size: 32px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.15s ease-out;
+      filter: drop-shadow(0 0 10px rgba(255, 75, 130, 0.8));
+    }
+
+    .game-heart:active {
+      transform: scale(1.4);
+    }
+
+    .game-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: #ff9ebb;
+      font-weight: 500;
+    }
+
+    /* 3. КУПОНЫ НА ЖЕЛАНИЯ */
+    .coupons-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .coupon-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .coupon-card.used {
+      opacity: 0.6;
+      border-color: #2ed573;
+      background: rgba(46, 213, 115, 0.1);
+    }
+
+    .coupon-icon {
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .coupon-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .coupon-status {
+      font-size: 10px;
+      color: #ff9ebb;
+      margin-top: 4px;
+    }
+
+    /* 4. КНОПКА ЛЮБВИ С НАКОПИТЕЛЕМ */
+    .love-meter-wrap {
+      width: 100%;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 12px 0 16px;
+    }
+
+    .love-meter-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff416c, #ff4b2b);
+      border-radius: 10px;
+      transition: width 0.2s ease;
+    }
+
+    .tap-heart-btn {
+      font-size: 48px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.1s;
+      outline: none;
+    }
+
+    .tap-heart-btn:active {
+      transform: scale(1.3) rotate(-8deg);
+    }
+
+    /* Аудио кнопка */
+    .audio-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 99;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Фон с летящими сердечками -->
+  <div class="bg-hearts" id="bg-hearts"></div>
+
+  <!-- Кнопка музыки -->
+  <div class="audio-toggle" id="music-btn" onclick="toggleMusic()">🎵</div>
+
+  <div class="container">
+    
+    <!-- ЭКРАН 1: Блокировка паролем -->
+    <div class="glass-card" id="lock-screen">
+      <div class="lock-icon">🔒</div>
+      <h2>Особый секрет</h2>
+      <p class="subtitle">Введи дату, когда для нас всё началось<br><span style="color: rgba(255,255,255,0.4); font-size: 11px;">(Формат: дд.мм.гггг)</span></p>
+      
+      <div class="input-wrapper">
+        <input type="text" id="pass-input" placeholder="00.00.0000" maxlength="10" autocomplete="off">
+      </div>
+
+      <button class="btn-action" onclick="checkPassword()">Открыть ❤️</button>
+      <div class="error-msg" id="error-msg">Неправильная дата, вспомни наш день 💕</div>
+    </div>
+
+    <!-- ЭКРАН 2: Основной контент с интерактивом -->
+    <div id="content-screen">
+      
+      <!-- Письмо любви -->
+      <div class="glass-card">
+        <div class="header-tag">04.07.2026 • Наш день</div>
+        <h1 class="love-title">Моя любимая девочка ❤️</h1>
+
+        <div class="counter-box">
+          <div class="counter-label">Мы вместе уже</div>
+          <div class="counter-value" id="days-counter">Считаем моменты...</div>
+        </div>
+
+        <div class="text-content">
+          <p>Каждый день рядом с тобой — это самое настоящее чудо, о котором я даже не мог мечтать.</p>
+          <p>Твоя улыбка освещает даже самые хмурые дни, а твой смех заставляет моё сердце биться быстрее. Ты делаешь меня самым счастливым человеком на свете.</p>
+          <p>Я безумно люблю твои глаза, твой голос, твои нежные объятия и то, как ты искренне радуешься мелочам. Спасибо тебе за то, какая ты есть, за твою заботу, тепло и веру в меня.</p>
+          <p>Я обещаю всегда быть рядом, поддерживать тебя во всем, оберегать твой покой и любить тебя ещё крепче с каждым новым рассветом.</p>
+        </div>
+
+        <div class="signature">
+          Навсегда твой ❤️
+        </div>
+      </div>
+
+      <!-- ИНТЕРАКТИВ 1: Генератор 100 причин любви -->
+      <div class="glass-card">
+        <div class="section-title">💌 Почему я люблю тебя?</div>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 14px;">
+          Нажимай на кнопку, чтобы достать записку с причиной:
+        </p>
+        <button class="jar-btn" onclick="getRandomReason()">✨ Достать записку ✨</button>
+        <div class="reason-box" id="reason-box">Нажми на кнопку выше... 💕</div>
+      </div>
+
+      <!-- ИНТЕРАКТИВ 2: Мини-игра «Поймай мою любовь» -->
+      <div class="glass-card">
+        <div class="section-title">🎮 Поймай моё сердце</div>
+        <div class="game-stats">
+          <span>Счёт: <b id="game-score" style="color: #fff;">0</b>/15</span>
+          <span id="game-status">Нажми Старт!</span>
+        </div>
+        <button class="btn-action" id="start-game-btn" onclick="startGame()" style="padding: 10px; font-size: 14px;">Начать игру</button>
+        <div class="game-area" id="game-area"></div>
+      </div>
+
+      <!-- ИНТЕРАКТИВ 3: Купоны на желания -->
+      <div class="glass-card">
+        <div class="section-title">🎟️ Твои купоны на желания</div>
+        <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 8px;">
+          Ты можешь активировать любой в реальной жизни в любое время:
+        </p>
+        <div class="coupons-grid">
+          <div class="coupon-card" onclick="useCoupon(this, 'Массаж спинки или ножек')">
+            <div class="coupon-icon">💆‍♀️</div>
+            <div class="coupon-title">Массаж без вопросов</div>
+            <div class="coupon-status">Нажми применить</div>
+          </div>
+          <div class="coupon-card" onclick="useCoupon(this, 'Любая вкусняшка или доставка')">
+            <div class="coupon-icon">🍰</div>
+            <div class="coupon-title">Любая вкусняшка</div>
+            <div class="coupon-status">Нажми применить</div>
+          </div>
+          <div class="coupon-card" onclick="useCoupon(this, 'Выбор фильма и обнимашки')">
+            <div class="coupon-icon">🎬</div>
+            <div class="coupon-title">Твой выбор фильма</div>
+            <div class="coupon-status">Нажми применить</div>
+          </div>
+          <div class="coupon-card" onclick="useCoupon(this, 'Полное согласие во всём на вечер')">
+            <div class="coupon-icon">👑</div>
+            <div class="coupon-title">Ты права во всём</div>
+            <div class="coupon-status">Нажми применить</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ИНТЕРАКТИВ 4: Любвеметр -->
+      <div class="glass-card">
+        <div class="section-title">💖 Заряди мою любовь</div>
+        <p style="font-size: 12px; color: rgba(255,255,255,0.7);">
+          Быстро тапай по сердечку, чтобы заполнить шкалу до 100%!
+        </p>
+        <div class="love-meter-wrap">
+          <div class="love-meter-bar" id="meter-bar"></div>
+        </div>
+        <div style="font-size: 13px; color: #ffb3c6; margin-bottom: 10px;" id="meter-text">Уровень любви: 0%</div>
+        <button class="tap-heart-btn" onclick="tapHeart()">💖</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Фоновые сердечки
+    const bgContainer = document.getElementById('bg-hearts');
+    const heartSymbols = ['❤️', '💖', '✨', '💕', '🌸', '💫'];
+
+    function createFloatingHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('floating-heart');
+      heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.fontSize = (Math.random() * 18 + 12) + 'px';
+      heart.style.animationDuration = (Math.random() * 4 + 5) + 's';
+      heart.style.opacity = Math.random() * 0.7 + 0.3;
+      bgContainer.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 9000);
+    }
+    setInterval(createFloatingHeart, 450);
+
+    // Маска ввода даты
+    const passInput = document.getElementById('pass-input');
+    passInput.addEventListener('input', function() {
+      let v = this.value.replace(/\D/g, '');
+      if (v.length > 2 && v.length <= 4) {
+        v = v.slice(0, 2) + '.' + v.slice(2);
+      } else if (v.length > 4) {
+        v = v.slice(0, 2) + '.' + v.slice(2, 4) + '.' + v.slice(4, 8);
+      }
+      this.value = v;
+    });
+
+    passInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') checkPassword();
+    });
+
+    // Проверка пароля
+    function checkPassword() {
+      const entered = passInput.value.trim();
+      const validDate = "04.07.2026";
+      const lockScreen = document.getElementById('lock-screen');
+      const contentScreen = document.getElementById('content-screen');
+      const errorMsg = document.getElementById('error-msg');
+
+      if (entered === validDate) {
+        errorMsg.classList.remove('visible');
+        lockScreen.style.opacity = '0';
+        lockScreen.style.transform = 'scale(0.9)';
+        
+        bigCelebration();
+
+        setTimeout(() => {
+          lockScreen.style.display = 'none';
+          contentScreen.classList.add('active');
+          startCounter();
+        }, 500);
+
+      } else {
+        errorMsg.classList.add('visible');
+        lockScreen.classList.add('shake');
+        setTimeout(() => lockScreen.classList.remove('shake'), 400);
+      }
+    }
+
+    // Счетчик времени
+    function startCounter() {
+      const startDate = new Date(2026, 6, 4);
+      const counterEl = document.getElementById('days-counter');
+
+      function update() {
+        const now = new Date();
+        const diff = now - startDate;
+
+        if (diff < 0) {
+          const remaining = Math.abs(diff);
+          const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+          counterEl.innerHTML = `До нашей даты: <b>${days}</b> дн. 💕`;
+        } else {
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+          const mins = Math.floor((diff / 1000 / 60) % 60);
+          const secs = Math.floor((diff / 1000) % 60);
+          counterEl.innerHTML = `${days}д ${hours}ч ${mins}м ${secs}с ❤️`;
+        }
+      }
+      update();
+      setInterval(update, 1000);
+    }
+
+    // 100 ПРИЧИН ПОЧЕМУ Я ЛЮБЛЮ ТЕБЯ
+    const reasons = [
+      "За твой невероятно милый и заразительный смех 💖",
+      "За то, как ты уютно обнимаешь меня, когда засыпаешь 🥰",
+      "За твои глаза, в которых можно утонуть с первого взгляда ✨",
+      "За то, как вкусно пахнут твои волосы 🌸",
+      "За твои забавные и милые привычки, о которых знаю только я 🤫",
+      "За то, что ты делаешь самый обычный день праздником ❤️",
+      "За то, как ты дуешь щёчки, когда немного вредничаешь 🥺",
+      "За твою искреннюю заботу и теплоту 💕",
+      "За то, что рядом с тобой я чувствую себя самым сильным и нужным 🦸‍♂️",
+      "За твои бесконечно длинные и интересные рассказы обо всём на свете 📖",
+      "За то, что ты умеешь рассмешить меня одной лишь улыбкой 😊",
+      "За то, что твои холодные ручки так приятно греть в своих ладонях ❄️",
+      "За то, что ты веришь в меня даже тогда, когда опускаются руки 💪",
+      "За твой безупречный вкус во всём 👗",
+      "Просто за то, что ты есть на этой планете и выбрала меня! ❤️"
+    ];
+
+    let lastIndex = -1;
+    function getRandomReason() {
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * reasons.length);
+      } while (idx === lastIndex && reasons.length > 1);
+      lastIndex = idx;
+
+      const box = document.getElementById('reason-box');
+      box.style.transform = 'scale(0.95)';
+      box.style.opacity = '0';
+      
+      setTimeout(() => {
+        box.innerHTML = reasons[idx];
+        box.style.transform = 'scale(1)';
+        box.style.opacity = '1';
+      }, 150);
+
+      confetti({
+        particleCount: 20,
+        spread: 40,
+        origin: { y: 0.7 }
+      });
+    }
+
+    // МИНИ-ИГРА "ПОЙМАЙ СЕРДЕЧКИ"
+    let gameScore = 0;
+    let gameInterval = null;
+    const gameArea = document.getElementById('game-area');
+
+    function startGame() {
+      gameScore = 0;
+      document.getElementById('game-score').innerText = '0';
+      document.getElementById('game-status').innerText = 'Лови сердечки!';
+      document.getElementById('start-game-btn').style.display = 'none';
+      gameArea.innerHTML = '';
+
+      if (gameInterval) clearInterval(gameInterval);
+
+      gameInterval = setInterval(() => {
+        if (gameScore >= 15) {
+          clearInterval(gameInterval);
+          document.getElementById('game-status').innerText = 'Победа! Ты моё всё ❤️';
+          document.getElementById('start-game-btn').style.display = 'block';
+          document.getElementById('start-game-btn').innerText = 'Сыграть ещё раз';
+          bigCelebration();
+          return;
+        }
+
+        spawnHeart();
+      }, 800);
+    }
+
+    function spawnHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('game-heart');
+      heart.innerText = ['❤️', '💖', '💘', '💞', '🍓'][Math.floor(Math.random() * 5)];
+      
+      const maxX = gameArea.clientWidth - 50;
+      const maxY = gameArea.clientHeight - 50;
+
+      heart.style.left = Math.max(10, Math.random() * maxX) + 'px';
+      heart.style.top = Math.max(10, Math.random() * maxY) + 'px';
+
+      heart.onclick = function() {
+        gameScore++;
+        document.getElementById('game-score').innerText = gameScore;
+        heart.style.transform = 'scale(1.8)';
+        heart.style.opacity = '0';
+        setTimeout(() => heart.remove(), 150);
+
+        confetti({
+          particleCount: 15,
+          spread: 30,
+          origin: {
+            x: (heart.getBoundingClientRect().left + 20) / window.innerWidth,
+            y: (heart.getBoundingClientRect().top + 20) / window.innerHeight
+          }
+        });
+      };
+
+      gameArea.appendChild(heart);
+
+      setTimeout(() => {
+        if (heart.parentNode) heart.remove();
+      }, 1400);
+    }
+
+    // КУПОНЫ
+    function useCoupon(el, title) {
+      if (el.classList.contains('used')) return;
+      el.classList.add('used');
+      el.querySelector('.coupon-status').innerText = 'Активирован! ✔️';
+      el.querySelector('.coupon-status').style.color = '#2ed573';
+      
+      confetti({
+        particleCount: 40,
+        spread: 60,
+        origin: { y: 0.8 }
+      });
+
+      alert(`Купон "${title}" активирован! Покажи этот экран любимому ❤️`);
+    }
+
+    // ЛЮБВЕМЕТР (ТАПЕР)
+    let loveLevel = 0;
+    function tapHeart() {
+      loveLevel += 5;
+      if (loveLevel > 100) loveLevel = 100;
+
+      const bar = document.getElementById('meter-bar');
+      const text = document.getElementById('meter-text');
+      bar.style.width = loveLevel + '%';
+      text.innerText = `Уровень любви: ${loveLevel}%`;
+
+      if (loveLevel === 100) {
+        text.innerHTML = `Уровень любви: <b>БЕСКОНЕЧНОСТЬ! 💖</b>`;
+        bigCelebration();
+      }
+    }
+
+    // Конфетти салют
+    function bigCelebration() {
+      const end = Date.now() + 2500;
+      (function frame() {
+        confetti({
+          particleCount: 20,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.7 }
+        });
+        confetti({
+          particleCount: 20,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.7 }
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      }());
+    }
+
+    // Фоновая романтичная мелодия через Web Audio API
+    let audioCtx = null;
+    let isPlaying = false;
+    let melodyTimeout = null;
+
+    function toggleMusic() {
+      const btn = document.getElementById('music-btn');
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      if (isPlaying) {
+        isPlaying = false;
+        btn.innerText = '🔇';
+        if (melodyTimeout) clearTimeout(melodyTimeout);
+      } else {
+        isPlaying = true;
+        btn.innerText = '🎵';
+        playGentleMusic();
+      }
+    }
+
+    function playNote(freq, start, duration) {
+      if (!isPlaying || !audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+
+      gain.gain.setValueAtTime(0.001, audioCtx.currentTime + start);
+      gain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + start + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + start + duration);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start(audioCtx.currentTime + start);
+      osc.stop(audioCtx.currentTime + start + duration);
+    }
+
+    function playGentleMusic() {
+      if (!isPlaying) return;
+      const notes = [261.63, 329.63, 392.00, 440.00, 523.25, 440.00, 392.00, 329.63];
+      notes.forEach((freq, idx) => {
+        playNote(freq, idx * 0.5, 0.9);
+      });
+
+      melodyTimeout = setTimeout(() => {
+        if (isPlaying) playGentleMusic();
+      }, notes.length * 500 + 400);
+    }
+  </script>
+</body>
+</html>

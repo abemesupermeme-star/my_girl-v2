@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -423,6 +423,141 @@
       transform: scale(1.3) rotate(-8deg);
     }
 
+
+    /* 5. РАНДОМАЙЗЕР СВИДАНИЙ */
+    .wheel-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 105, 180, 0.4);
+      border-radius: 18px;
+      padding: 16px;
+      margin: 14px 0;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: #ffd6e0;
+      transition: all 0.3s;
+      line-height: 1.4;
+    }
+
+    /* 6. СКРЕТЧ-КАРТОЧКИ */
+    .scratch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .scratch-item {
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, rgba(255, 105, 180, 0.25), rgba(120, 50, 255, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 11px;
+      text-align: center;
+      padding: 6px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .scratch-item:active {
+      transform: scale(0.96);
+    }
+    .scratch-item .scratch-cover {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #ff4b82 0%, #a83279 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      transition: all 0.4s ease;
+      z-index: 2;
+    }
+    .scratch-item .scratch-cover span {
+      font-size: 9px;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+      opacity: 0.85;
+      text-transform: uppercase;
+    }
+    .scratch-item.opened .scratch-cover {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.6) rotate(15deg);
+    }
+    .scratch-item .scratch-text {
+      font-size: 11px;
+      line-height: 1.3;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    /* 7. ВИКТОРИНА О НАС */
+    .quiz-card {
+      text-align: left;
+    }
+    .quiz-q {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #ffd6e0;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .quiz-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .quiz-btn {
+      width: 100%;
+      text-align: left;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .quiz-btn:active {
+      transform: scale(0.98);
+    }
+    .quiz-btn.correct {
+      background: rgba(46, 213, 115, 0.25) !important;
+      border-color: #2ed573 !important;
+      color: #7bed9f !important;
+    }
+    .quiz-btn.wrong {
+      background: rgba(255, 71, 87, 0.25) !important;
+      border-color: #ff4757 !important;
+      color: #ff6b81 !important;
+    }
+
+    /* 8. ГЕНЕРАТОР ОБЕЩАНИЙ */
+    .promise-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      background: rgba(255, 75, 130, 0.2);
+      border: 1px solid rgba(255, 75, 130, 0.4);
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      color: #ff9ebb;
+    }
+
     /* Аудио кнопка */
     .audio-toggle {
       position: fixed;
@@ -544,6 +679,73 @@
         </div>
       </div>
 
+
+      <!-- ИНТЕРАКТИВ 5: Куда сходим? (Генератор свиданий) -->
+      <div class="glass-card">
+        <div class="section-title">🎲 Куда сходим на свидание?</div>
+        <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 8px;">
+          Не можешь выбрать, чем заняться? Нажми кнопку — и судьба всё решит за нас!
+        </p>
+        <div class="wheel-box" id="date-idea-box">Нажми «Крутить колесо» ✨</div>
+        <button class="btn-action" onclick="spinDateIdea()" style="padding: 12px; font-size: 14px;">🎲 Случайная идея</button>
+      </div>
+
+      <!-- ИНТЕРАКТИВ 6: Скретч-карточки (Секретные послания) -->
+      <div class="glass-card">
+        <div class="section-title">✨ Секретные карточки</div>
+        <p style="font-size: 12px; color: rgba(255,255,255,0.7);">
+          Нажми на любую карточку, чтобы стереть защитный слой и открыть послание:
+        </p>
+        <div class="scratch-grid">
+          <div class="scratch-item" onclick="revealCard(this)">
+            <div class="scratch-cover">🎁<span>Открыть</span></div>
+            <div class="scratch-text">Ты самое красивое создание во Вселенной! 💖</div>
+          </div>
+          <div class="scratch-item" onclick="revealCard(this)">
+            <div class="scratch-cover">💌<span>Открыть</span></div>
+            <div class="scratch-text">Обожаю каждую секунду, проведённую с тобой 🌟</div>
+          </div>
+          <div class="scratch-item" onclick="revealCard(this)">
+            <div class="scratch-cover">🧸<span>Открыть</span></div>
+            <div class="scratch-text">Вкусняшка за мой счёт прямо сегодня! 🍰</div>
+          </div>
+          <div class="scratch-item" onclick="revealCard(this)">
+            <div class="scratch-cover">🌹<span>Открыть</span></div>
+            <div class="scratch-text">Крепкие объятия до хруста в косточках 🤗</div>
+          </div>
+          <div class="scratch-item" onclick="revealCard(this)">
+            <div class="scratch-cover">🔮<span>Открыть</span></div>
+            <div class="scratch-text">Впереди нас ждёт самое яркое будущее 🚀</div>
+          </div>
+          <div class="scratch-item" onclick="revealCard(this)">
+            <div class="scratch-cover">👑<span>Открыть</span></div>
+            <div class="scratch-text">Моя королева, ты сегодня неотразима! ✨</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ИНТЕРАКТИВ 7: Мини-викторина «Насколько ты меня знаешь?» -->
+      <div class="glass-card quiz-card">
+        <div class="section-title" style="text-align: center;">🧠 Мини-тест о нас</div>
+        <p style="font-size: 12px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 14px;" id="quiz-progress">Вопрос 1 из 3</p>
+        <div class="quiz-q" id="quiz-question">Загрузка вопроса...</div>
+        <div class="quiz-opts" id="quiz-options"></div>
+        <div id="quiz-result" style="display:none; text-align:center; margin-top:14px; font-size:14px; font-weight:600; color:#ffd6e0; line-height: 1.5;"></div>
+      </div>
+
+      <!-- ИНТЕРАКТИВ 8: Генератор честных обещаний -->
+      <div class="glass-card">
+        <div class="promise-badge">Официальный сертификат</div>
+        <div class="section-title">📜 Моё обещание тебе</div>
+        <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 12px;">
+          Жми, чтобы получить железное обещание от меня, которое нельзя нарушить:
+        </p>
+        <div class="wheel-box" id="promise-box" style="font-family: 'Caveat', cursive; font-size: 20px; color: #ffb3c6;">
+          «Обещаю никогда не забирать у тебя последнее одеяло 🛌»
+        </div>
+        <button class="btn-action" onclick="generatePromise()" style="padding: 12px; font-size: 14px;">💫 Получить новое обещание</button>
+      </div>
+
       <!-- ИНТЕРАКТИВ 4: Любвеметр -->
       <div class="glass-card">
         <div class="section-title">💖 Заряди мою любовь</div>
@@ -615,6 +817,7 @@
           lockScreen.style.display = 'none';
           contentScreen.classList.add('active');
           startCounter();
+          renderQuiz();
         }, 500);
 
       } else {
@@ -622,6 +825,141 @@
         lockScreen.classList.add('shake');
         setTimeout(() => lockScreen.classList.remove('shake'), 400);
       }
+    }
+
+
+    // ИНТЕРАКТИВ 5: Идеи для свиданий
+    const dateIdeas = [
+      'Купить гору вкусняшек и устроить киномарафон под пледом 🍿🎬',
+      'Пойти гулять по вечернему городу с горячим кофе или чаем ☕✨',
+      'Заказать пиццу/суши и устроить пикник на полу в комнате 🍕🛋️',
+      'Приготовить вместе что-то безумно вкусное и новое 🍝👩‍🍳',
+      'Сходить в самое красивое кафе в городе за десертами 🍰🍰',
+      'Устроить фотосессию в милых парных образах 📸💖',
+      'Поехать кататься по ночному городу под любимый плейлист 🚗🌃',
+      'Пойти в парк аттракционов или игровых автоматов 🎡🎠'
+    ];
+    function spinDateIdea() {
+      const box = document.getElementById('date-idea-box');
+      box.style.opacity = '0.3';
+      let count = 0;
+      const interval = setInterval(() => {
+        const rand = dateIdeas[Math.floor(Math.random() * dateIdeas.length)];
+        box.innerText = rand;
+        count++;
+        if (count >= 10) {
+          clearInterval(interval);
+          box.style.opacity = '1';
+          confetti({ particleCount: 25, spread: 50, origin: { y: 0.7 } });
+        }
+      }, 70);
+    }
+
+    // ИНТЕРАКТИВ 6: Скретч-карточки
+    function revealCard(el) {
+      if (el.classList.contains('opened')) return;
+      el.classList.add('opened');
+      confetti({
+        particleCount: 20,
+        spread: 40,
+        origin: {
+          x: (el.getBoundingClientRect().left + 30) / window.innerWidth,
+          y: (el.getBoundingClientRect().top + 30) / window.innerHeight
+        }
+      });
+    }
+
+    // ИНТЕРАКТИВ 7: Мини-викторина
+    const quizQuestions = [
+      {
+        q: 'Кто в нашей паре сильнее любит обниматься?',
+        opts: ['Конечно ты 💕', 'Конечно я 🤗', 'Оба до бесконечности! ❤️'],
+        correct: 2
+      },
+      {
+        q: 'Какая дата для нас самая особенная?',
+        opts: ['01.01.2026 🎄', '04.07.2026 💖', '14.02.2026 💌'],
+        correct: 1
+      },
+      {
+        q: 'Что происходит, когда ты мне улыбаешься?',
+        opts: ['Моё сердце тает на 1000% 🫠', 'Солнце светит ярче ☀️', 'Всё вышеперечисленное сразу! 💖'],
+        correct: 2
+      }
+    ];
+    let currentQuizIndex = 0;
+
+    function renderQuiz() {
+      const qEl = document.getElementById('quiz-question');
+      const optsEl = document.getElementById('quiz-options');
+      const progEl = document.getElementById('quiz-progress');
+      const resEl = document.getElementById('quiz-result');
+
+      if (!qEl || !optsEl) return;
+
+      if (currentQuizIndex >= quizQuestions.length) {
+        progEl.style.display = 'none';
+        qEl.style.display = 'none';
+        optsEl.style.display = 'none';
+        resEl.style.display = 'block';
+        resEl.innerHTML = '🎉 Викторина пройдена!<br><b>Твой результат: 100% совпадение!</b><br>Ты идеально знаешь нас ❤️';
+        bigCelebration();
+        return;
+      }
+
+      progEl.innerText = 'Вопрос ' + (currentQuizIndex + 1) + ' из ' + quizQuestions.length;
+      const curr = quizQuestions[currentQuizIndex];
+      qEl.innerText = curr.q;
+      optsEl.innerHTML = '';
+
+      curr.opts.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.classList.add('quiz-btn');
+        btn.innerText = opt;
+        btn.onclick = () => handleQuizAnswer(idx, btn);
+        optsEl.appendChild(btn);
+      });
+    }
+
+    function handleQuizAnswer(selectedIdx, btn) {
+      const curr = quizQuestions[currentQuizIndex];
+      const buttons = document.querySelectorAll('.quiz-btn');
+      buttons.forEach(b => b.disabled = true);
+
+      if (selectedIdx === curr.correct) {
+        btn.classList.add('correct');
+        confetti({ particleCount: 25, spread: 45, origin: { y: 0.65 } });
+      } else {
+        btn.classList.add('wrong');
+        if (buttons[curr.correct]) buttons[curr.correct].classList.add('correct');
+      }
+
+      setTimeout(() => {
+        currentQuizIndex++;
+        renderQuiz();
+      }, 1000);
+    }
+
+    // ИНТЕРАКТИВ 8: Обещания
+    const promisesList = [
+      '«Обещаю всегда приносить тебе чай/кофе, когда ты устала ☕»',
+      '«Обещаю выслушивать все твои истории с искренним интересом 💖»',
+      '«Обещаю никогда не забирать у тебя последнее одеяло 🛌»',
+      '«Обещаю целовать тебя в лобик перед сном и при встрече 💋»',
+      '«Обещаю оберегать твоё спокойствие и защищать от любых бед 🛡️»',
+      '«Обещаю всегда говорить тебе, какая ты у меня красивая 👑»',
+      '«Обещаю отдавать тебе самый вкусный последний кусочек пиццы 🍕»',
+      '«Обещаю любить тебя крепче с каждым новым прожитым днём ❤️»'
+    ];
+    function generatePromise() {
+      const pBox = document.getElementById('promise-box');
+      pBox.style.opacity = '0';
+      setTimeout(() => {
+        const rand = promisesList[Math.floor(Math.random() * promisesList.length)];
+        pBox.innerText = rand;
+        pBox.style.opacity = '1';
+        confetti({ particleCount: 20, spread: 35, origin: { y: 0.8 } });
+      }, 150);
     }
 
     // Счетчик времени
@@ -665,7 +1003,27 @@
       "За то, что твои холодные ручки так приятно греть в своих ладонях ❄️",
       "За то, что ты веришь в меня даже тогда, когда опускаются руки 💪",
       "За твой безупречный вкус во всём 👗",
-      "Просто за то, что ты есть на этой планете и выбрала меня! ❤️"
+      "Просто за то, что ты есть на этой планете и выбрала меня! ❤️",
+      "За твою милую привычку морщить носик, когда ты смеешься 🌸",
+      "За то, как ты согреваешь меня даже в самый лютый мороз своим теплом ☕",
+      "За твои голосовые сообщения, которые я могу переслушивать по 10 раз 🎧",
+      "За то, как ты радуешься маленьким сюрпризам и вкусняшкам 🍫",
+      "За твою поддержку во всех моих безумных начинаниях 🚀",
+      "За то, как гармонично и спокойно рядом с тобой просто молчать 🌌",
+      "За твою доброту ко всем вокруг и искреннее нежное сердце 🕊️",
+      "За твои сонные утренние сообщения с пожеланием доброго утра ☀️",
+      "За то, как красиво на тебе сидит абсолютно любая одежда 👗",
+      "За то, что с тобой даже поход в магазин превращается в романтику 🛒",
+      "За твое невероятное чувство юмора, которое всегда поднимает настроение 😂",
+      "За то, как ты переживаешь за меня, если я устал или забыл поесть 🍲",
+      "За наши ночные душевные разговоры обо всем на свете под луной 🌙",
+      "За твои волшебные прикосновения, от которых бегут мурашки по коже ⚡",
+      "За то, что ты делаешь меня лучшей версией себя каждый день 🌟",
+      "За то, что в твоих теплых объятиях я дома, где бы мы ни были 🏡",
+      "За то, как ты поправляешь свои волосы перед зеркалом 🎀",
+      "За твои самые сладкие поцелуи на свежем воздухе 💋",
+      "За то, что мы с тобой понимаем друг друга без лишних слов, по взгляду 👀",
+      "За твой искренний и звонкий смех, который мгновенно лечит любую грусть 🧸"
     ];
 
     let lastIndex = -1;

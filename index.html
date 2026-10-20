@@ -680,16 +680,6 @@
       </div>
 
 
-      <!-- ИНТЕРАКТИВ 5: Куда сходим? (Генератор свиданий) -->
-      <div class="glass-card">
-        <div class="section-title">🎲 Куда сходим на свидание?</div>
-        <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 8px;">
-          Не можешь выбрать, чем заняться? Нажми кнопку — и судьба всё решит за нас!
-        </p>
-        <div class="wheel-box" id="date-idea-box">Нажми «Крутить колесо» ✨</div>
-        <button class="btn-action" onclick="spinDateIdea()" style="padding: 12px; font-size: 14px;">🎲 Случайная идея</button>
-      </div>
-
       <!-- ИНТЕРАКТИВ 6: Скретч-карточки (Секретные послания) -->
       <div class="glass-card">
         <div class="section-title">✨ Секретные карточки</div>
@@ -827,33 +817,6 @@
       }
     }
 
-
-    // ИНТЕРАКТИВ 5: Идеи для свиданий
-    const dateIdeas = [
-      'Купить гору вкусняшек и устроить киномарафон под пледом 🍿🎬',
-      'Пойти гулять по вечернему городу с горячим кофе или чаем ☕✨',
-      'Заказать пиццу/суши и устроить пикник на полу в комнате 🍕🛋️',
-      'Приготовить вместе что-то безумно вкусное и новое 🍝👩‍🍳',
-      'Сходить в самое красивое кафе в городе за десертами 🍰🍰',
-      'Устроить фотосессию в милых парных образах 📸💖',
-      'Поехать кататься по ночному городу под любимый плейлист 🚗🌃',
-      'Пойти в парк аттракционов или игровых автоматов 🎡🎠'
-    ];
-    function spinDateIdea() {
-      const box = document.getElementById('date-idea-box');
-      box.style.opacity = '0.3';
-      let count = 0;
-      const interval = setInterval(() => {
-        const rand = dateIdeas[Math.floor(Math.random() * dateIdeas.length)];
-        box.innerText = rand;
-        count++;
-        if (count >= 10) {
-          clearInterval(interval);
-          box.style.opacity = '1';
-          confetti({ particleCount: 25, spread: 50, origin: { y: 0.7 } });
-        }
-      }, 70);
-    }
 
     // ИНТЕРАКТИВ 6: Скретч-карточки
     function revealCard(el) {
